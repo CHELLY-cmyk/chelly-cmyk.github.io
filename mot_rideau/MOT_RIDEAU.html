@@ -7,7 +7,7 @@
 
 </head>
 
-CHELLY Najib: REGLE DU JEU: On montre le tiers du mot en haut ou du milieu ou en bas a vous de trouver le mot. Avec l'option RIDEAU le programme dÈvoile ligne aprÈs ligne.
+CHELLY Najib: REGLE DU JEU: On montre le tiers du mot en haut ou du milieu ou en bas a vous de trouver le mot. Avec l'option RIDEAU le programme d√©voile ligne apr√©s ligne.
 
 <body>
 
@@ -26,7 +26,7 @@ CHELLY Najib: REGLE DU JEU: On montre le tiers du mot en haut ou du milieu ou en
 
 
 <FORM name="mon_formulaire">
-<INPUT type=button value="RÈponse ?" onClick="PromptMessage()">
+<INPUT type=button value="R√©ponse ?" onClick="PromptMessage()">
 </FORM>
 <FORM>
 <INPUT type=button value="LA SOLUTION:" onClick="Message()">
@@ -87,7 +87,7 @@ window.onload = function()
 //  <INPUT TYPE="button" Value=" Menu & Options " onclick="window.location='indexMot.html';">
 
 /*
-      // CrÈation de l'ÈlÈment canvas
+      // Cr√©ation de l'√©l√©ment canvas
       canvas = document.createElement('CANVAS');
       canvas.setAttribute('width', 132);
       canvas.setAttribute('height', 150);
@@ -96,13 +96,13 @@ window.onload = function()
     var canvas = document.getElementById("myCanvas");
     if(!canvas)
     {
-        alert("Impossible de rÈcupÈrer le canvas")
+        alert("Impossible de r√©cup√©rer le canvas")
     }
     
     var context = canvas.getContext("2d");
     if(!context)
     {
-        alert("Impossible de rÈcupÈrer le context");
+        alert("Impossible de r√©cup√©rer le context");
     }
 	
 	        canvas.width = window.innerWidth  ;
@@ -234,11 +234,11 @@ alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	//  var option ;
 	 var de , jusque ;
 	  
-	var firstTimestamp = new Date().getTime(); // On obtient le timestamp avant l'exÈcution
+	var firstTimestamp = new Date().getTime(); // On obtient le timestamp avant l'ex√©cution
 
 // slow(); // La fonction travaille...
 
-var secondTimestamp = new Date().getTime(); // On rÈcupËre le timestamp aprËs l'exÈcution
+var secondTimestamp = new Date().getTime(); // On r√©cup√®re le timestamp apr√®s l'ex√©cution
 var result , cycle = 1 ;
 
  //    myInterval = setInterval(animate, 1000/30);  // animate, 1000/30    BON PC
@@ -324,7 +324,7 @@ var result , cycle = 1 ;
    if (option == 1 )  result = secondTimestamp - firstTimestamp; // On fait la soustraction
      else firstTimestamp = secondTimestamp ;
                                                                                
-  // alert("Le temps d'exÈcution est de : " + result + " millisecondes.");
+  // alert("Le temps d'ex√©cution est de : " + result + " millisecondes.");
    
   //  alert(secondTimestamp - firstTimestamp) ;
   
@@ -337,7 +337,7 @@ var result , cycle = 1 ;
     // Ne pas ajouter de canevas pour l'image du cadre
     if (document.images[i].getAttribute('id') != 'frame') {
 
-      // CrÈation de l'ÈlÈment canvas
+      // Cr√©ation de l'√©l√©ment canvas
       canvas = document.createElement('CANVAS');
       canvas.setAttribute('width', 132);
       canvas.setAttribute('height', 150);
@@ -359,7 +359,7 @@ var result , cycle = 1 ;
 	   
 /*	   BON lecture du pixel
 
-	       // RÈcupËre les infos de pixel du canvas foreground
+	       // R√©cup√®re les infos de pixel du canvas foreground
       imgdatafg=contextfg.getImageData(0,0,width,height);
       pixelsfg=imgdatafg.data;
 	  
@@ -385,7 +385,7 @@ var img = new Image();
 
 
  
-if (option >  1 )   // Tiers superieur ou milieu ou tiers infÈrieur
+if (option >  1 )   // Tiers superieur ou milieu ou tiers inf√©rieur
 {
                        
 
@@ -554,7 +554,7 @@ if ( lettres[j+1].height - niveauaffichage < 20 )   limite = 1 ;
   
   list.addEventListener('change', function() {
 
-   // On affiche le contenu de l'ÈlÈment <option> ciblÈ par la propriÈtÈ selectedIndex
+   // On affiche le contenu de l'√©l√©ment <option> cibl√© par la propri√©t√© selectedIndex
    //   alert(list.options[list.selectedIndex].innerHTML);
 	 
 	 
