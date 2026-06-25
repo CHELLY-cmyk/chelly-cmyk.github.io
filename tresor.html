@@ -1,0 +1,1425 @@
+<html>
+
+
+<head>
+<meta name="viewport" content="user-scalable=no, width=device-width" /> 
+<meta name="apple-mobile-web-app-capable" content="yes" /> 
+<link rel="stylesheet" media="all and (orientation:landscape)" href="landscape.css">
+</head>
+
+
+
+GAME RULES: The computer randomly puts 9 pieces of treasure into 9 different squares. A tile can only contain one piece of treasure.
+The movement is free, knowing that in relation to the square where the player who has the hand is, 
+The computer tells him the boxes that may contain the treasure coins "*" on this row and on this column.
+
+
+<body>
+
+
+
+<canvas id="myCanvas" width = 500px height= 350px style="border:dashed 1px;">
+    Votre navigateur ne supporte pas canvas.
+</canvas>
+
+ 
+<select id="list">
+  <option>OPTIONS</option>
+  <option>Seul</option>
+  <option>Deux</option>
+  <option>PC</option>
+</select>
+
+<select id="list2">
+  <option>GRILLE</option>
+  <option>FACILE</option>
+  <option>MOYENNE</option>
+  <option>DIFFICILE</option>
+</select>
+
+
+
+
+<body onunload="window.opener.location.reload();">
+
+
+<FORM name="mon_formulaire">
+<INPUT type=button value="REJOUER" onClick="Rejouer()">
+</FORM>
+
+
+
+
+
+<script type="text/javascript">
+
+
+	
+
+
+var etape = 1;
+
+var decallage = 0;
+var offsetx  ; 
+var offsety  ;
+
+var li = 5 , colonne = 5 , pap = 5 ;
+var longueur = 40 , largeur = 30 ; 
+
+var pas , de , jusque , existe , h , g ;
+var micro = 1 ;    
+ 	
+var reste , ar , supprime  ;			
+var tour = 0;
+var curseur = 0;
+var posX = 0 ;
+var posY = 0 ;
+var xx = 0;
+var yy = 0;
+var debutx = 0;   
+var debuty = 0;   
+var place = [0,0,0,0,0];
+var joueur = [0,1,12];
+var onoff = 0 ;
+var nombrejoueur = 2  ;
+var essais = 11 ;
+var jr = 1 ;
+var exterieur = 0 ;
+var i = 1 , j = 1 ,  k = 1;
+var lacaze = 1 ;
+var lacaza = 1 ;
+
+
+var rep ;
+
+
+var piece = new Array(150);
+var gain   = new Array(3);
+var etudie = new Array(150) ;
+var efface = new Array(50) ;
+
+
+var gagne = [0,0,0,] ;
+	
+var lieu = [0,0,0,0,0] ;
+
+var photo =  ["*" , "*" ,"*" , "*"] ;
+
+var modif ;
+
+var dernierjoueur = 1 ; 
+var positionx , positiony ;  
+
+
+
+var firstTimestamp = new Date().getTime(); 
+var secondTimestamp = new Date().getTime() ;
+	
+
+
+window.onload = function()
+{
+ 
+    var canvas = document.getElementById("myCanvas");
+    if(!canvas)
+    {
+        alert("Impossible de récupérer le canvas")
+    }
+    
+    var context = canvas.getContext("2d");
+    if(!context)
+    {
+        alert("Impossible de récupérer le context");
+    }
+	
+ 		offsetx  = findPosX(canvas);
+		offsety  = findPosY(canvas);
+ 
+					  
+							
+
+ 
+ 
+ list.selectedIndex = 3 ;
+ 
+    var vitesseX = 3;
+    var vitesseY = 3;
+	
+	
+
+	var DebutAnimation;
+	var FinAnimation ;
+ 
+    var posX2 , posY2 ;
+
+	
+	
+    myInterval = setInterval(animate, 1000/30);  
+    
+ 
+for ( i = 1 ; i < 150 ; i = i + 1 )
+{
+piece[i] = 0 ;
+etudie[i] = 1 ;
+}
+
+if (pap == 5 || pap == 6)
+{
+etudie[3] = 10 ;
+etudie[11] = 10 ;
+etudie[13] = 10 ;
+etudie[15] = 10 ;
+etudie[23] = 10 ;
+}
+if (pap == 7)
+{
+etudie[4]  = 10 ;
+etudie[22] = 10 ;
+etudie[25] = 10 ;
+etudie[28] = 10 ;
+etudie[46] = 10 ;
+}
+
+gain[1] = 0 ; 
+gain[2] = 0 ;
+
+
+		  
+    function animate()
+    {
+
+    
+	   
+       context.clearRect( 0,  0, canvas.width, canvas.height);   
+
+    longueur = Math.floor(( canvas.width / (colonne + 1) ) ) - 1 ;
+	largeur =  Math.floor(((canvas.height / (li ) - 1 ) )) - 1;
+
+	rep = longueur % 4 ;
+	longueur = longueur - rep ;
+	
+	rep = largeur % 4 ;
+	largeur = largeur - rep ;	
+
+
+ 		
+
+		   
+    context.fillStyle = "#ff0000"; 
+    context.strokeStyle = "rgba(0, 0, 255, 0.5)"; //Toutes les prochaines formes "stroke" seront bleues et semi-transparentes.
+
+	 context.stroke();
+
+	 
+
+	 j = 0 ;
+	for ( i = 1 ; i <= li ; i = i + 1 )
+	{
+	context.strokeRect(  0 ,  (i - 1)  * largeur  , colonne * longueur , largeur    );
+	j = j + longueur  ;
+	}
+
+     j = 0 ;
+	for ( i = 1 ; i <= colonne ; i = i + 1 )
+	{
+	context.strokeRect(  (i - 1) * longueur  , 0  , longueur  , li * largeur     );
+	j = j + largeur  ;
+	}
+	
+	
+	
+
+
+	if (tour == 0 && curseur == 0 )
+	{
+	    posX =  0  ;
+		posY =  0  ;
+		
+		reste =  1  ;
+		
+        context.beginPath();		
+        context.font = "bold 48pt ,Arial";
+		
+       context.fillStyle =  'green' ;   
+          context.fillText( gain[1], posX  + 1  + longueur / 2 , posY + 1 +  largeur + largeur / 2  ) ;
+		 
+         context.font = "bold 40pt ,Arial";
+	   context.fillText(gain[1], ((colonne  + 1 ) * longueur) - 15  ,  largeur / 2    ) ;
+   
+    if ( nombrejoueur == 2 )
+	{
+	context.fillStyle =  'blue' ; 
+	context.fillText(gain[2] , ((colonne  + 1 ) * longueur) - 15   , li   * largeur    ) ;
+	   
+	 }
+	 
+	 initialise() ;
+	 
+
+context.font = "bold 12pt Calibri,Geneva,Arial";
+context.fillStyle = 'orange' ;  // "#fff"   // Blanc
+
+  context.fillText(photo[0] , colonne * longueur + 25  , (li / 2) * largeur  ) ;
+		  
+context.font = "bold 12pt , Arial";
+
+context.fillText( "reste" , colonne * longueur + 1  , ( ( (li / 2) - 1) * largeur ) + largeur / 2);
+context.fillText( reste , colonne * longueur + 10 , ((li / 2) * largeur ) +   Math.floor  ( 3 * (  largeur / 2 ) ) );
+
+context.font = "bold 12pt Arial";
+
+  context.fillStyle = 'blue' ;
+ context.fillText(gain[1] , (colonne    * longueur) + 8  ,  largeur / 2  ) ;
+
+ if ( nombrejoueur == 2 )
+{
+
+ context.fillStyle = 'green' ; //  'red' ;
+ context.fillText(gain[2] , (colonne    * longueur) + 8   , (li  * largeur )  ) ;
+}
+else
+{
+
+
+ context.font = "bold 12pt Arial";
+ context.fillStyle = 'blue' ;
+ context.fillText("ESSAIS" , ((colonne   ) * longueur) + 6  , (li  - 1 ) * largeur ) ;
+ context.fillText(essais , ((colonne   ) * longueur) + 8   , ((li  - 1 ) * largeur ) +  (3 * (largeur / 4) )  ) ;
+
+
+
+}
+   
+	
+       context.fill();
+	                                     
+		place[1] = 0;
+		place[2] = 0 ;
+		
+	
+//   A V E R I F I E R
+  decallage = decallage + 1 ;      
+
+		// Dessin du joueur 2
+		
+		posX =   (colonne  - 1) *  longueur   ;
+ 		posY =   ( li - 1) *  largeur     ; 
+
+        place[3] =  (colonne - 1) * longueur ;
+		place[4] = ( li - 1 ) * largeur  ;
+		
+       joueur[1] = 1;		
+       joueur[2] = li * colonne ;
+	   
+	   ar = joueur[1] ;
+	   etudie[ar] = -10000 ;
+	   ar = joueur[2] ;
+	   etudie[ar] = -10000 ;
+
+
+    if ( nombrejoueur == 2 )
+	{
+	context.fillStyle =  'blue' ; 
+	
+	// A verifier
+	context.fillText(gain[2] , posX + 1 + longueur / 2  , posY + 1 + largeur /2 ) ;
+	}
+	
+	context.fill();
+
+ 
+	tour = 1 ;
+	
+	
+	
+	curseur = 1 ;
+	
+
+  							
+	}
+
+else if ( essais <= 0 && reste == 0) 
+    {
+
+	context.clearRect( 0,  0, canvas.width, canvas.height);
+	
+		 j = 0 ;
+	for ( i = 1 ; i <= li ; i = i + 1 )
+	{
+	context.strokeRect(  0 ,  (i - 1)  * largeur  , colonne * longueur , largeur    );
+	j = j + longueur  ;
+	}
+
+     j = 0 ;
+	for ( i = 1 ; i <= colonne ; i = i + 1 )
+	{
+	context.strokeRect(  (i - 1) * longueur  , 0  , longueur  , li * largeur     );
+	j = j + largeur  ;
+	}
+	context.font = "bold 48pt Arial";
+	context.fillStyle =  'green'    ;
+	if ( dernierjoueur == 2 ) context.fillStyle =  'blue'    ;
+	
+	   context.font = "bold 48pt Arial";	  
+	context.fillStyle =  'green'    ; 
+
+ 		  context.fillText( gagne[1] , lieu[1]  + 1  + longueur / 4 , lieu[2]  + 1 + largeur  ) ;		  
+			if ( nombrejoueur == 2 )
+			{
+			  context.fillStyle =   'blue' ;
+			  context.fillText( gagne[2] , lieu[3] + 1  + longueur / 4 , lieu[4]  + 1 + largeur  ) ;
+			}
+			
+	
+			  context.fill();
+	
+
+	}
+
+	
+
+context.fill();	
+	
+
+	if ( onoff == 0 && curseur == 1 )  
+	{
+	
+var min , max , x , bhaut , bbas , p , y , v , p1 , y1  ;
+var intercase = 0 , py = 0   , m  , plusx , plusy ;
+
+
+m = 1 ;
+py = 1;
+
+supprime = -1 ;
+
+intercase = 0 ;
+
+min = Math.floor( ((joueur[jr] - 1) / pap ) ) ;
+min = min  * pap + 1;
+max = min + pap - 1;
+bbas = Math.floor(joueur[jr] % pap ) ;
+if (bbas == 0) bbas = pap ;
+bhaut = bbas + (pap - 1) * pap ;
+
+
+p = m + 1 + ((joueur[jr] - 1) % pap) * (longueur + intercase) ;
+v = Math.floor(((joueur[jr] - 1) / pap) );
+if ( joueur[jr] < pap + 1 ) y = py + intercase ; else y = py + intercase + v * intercase + 1 + (v * largeur) ;
+
+p1 = p;
+y1 = y ;
+p = Math.floor( ( p + (longueur / 2)) );
+y =  Math.floor( (y + (largeur / 2)) );
+
+
+ar = joueur[jr] ;
+etudie[ar] = -10000 ;    
+
+
+// gauche 
+de = min ;
+jusque = joueur[jr];
+pas = 1 ;
+existe = 0 ;
+
+
+plusx = p1 - ((jusque  - min) * longueur ) ;
+plusy = y1 ;
+
+	for (x = min ; x < joueur[jr] ; x++)
+	{
+		if ( piece[x] == 1 )
+		{
+		
+		//   dessiner fleche gauche   
+		existe = x ;
+	//	 text = text  + " G " ;
+
+		  break;
+		}
+	}
+
+	if (  micro == 1 && jr == 2 ) calcule();
+	
+	if ( existe > 0 )
+	{
+
+
+		for (x = min ; x < joueur[jr] ; x++)
+		{
+	
+
+	   if (joueur[3 - jr] != x  )
+		{
+		supprime = supprime + 1;
+		 efface[supprime] = x ;
+		}		
+
+
+		plusx = plusx + longueur  ;
+
+	
+	
+		}
+	
+	} 
+
+
+	
+
+	
+		
+
+// droite 
+de = joueur[jr] ;
+jusque = max;
+pas = 1 ;
+existe = 0 ;
+plusx = p1 ;
+plusy = y1 ;
+
+	for (x = joueur[jr] + 1 ; x <= max ; x++)
+	{
+		if ( piece[x] == 1 )
+		{
+
+		//   dessiner fleche droite   
+			existe = x ;
+		//	 text = text +  " D " ;
+
+		  break;
+		}
+	}
+
+		if (  micro == 1 && jr == 2) calcule();
+		
+	if ( existe > 0 )
+	{
+
+		for (x = joueur[jr] + 1 ; x <= max ; x++)
+		{
+
+
+		if (joueur[3 - jr] != x  )
+		{
+		supprime = supprime + 1;
+		 efface[supprime] = x ;
+		}
+		
+		 plusx = plusx + longueur ;
+	
+		}
+	
+	}
+	
+// preparer le tableau etudie de l'ordinateur
+
+
+//   bas   
+de = bbas ;
+jusque = joueur[jr];
+pas = pap ;
+existe = 0 ;
+
+plusx = p1 ;
+plusy = y1 ;
+
+
+
+	for (x = bbas ; x < joueur[jr] ; )
+	{
+		if ( piece[x] == 1 )
+		{
+	 
+		existe = x ;
+     
+		
+		 break;
+		}
+
+	x = x + pap ;
+	}
+
+	if (  micro == 1 && jr == 2 ) calcule();
+	
+	if ( existe > 0 )
+	{
+	
+	
+		for (x = joueur[jr] - pap   ; x >= bbas  ; )
+		
+		{
+	
+
+
+		if (joueur[3 - jr] != x  )
+		{
+		supprime = supprime + 1;
+		 efface[supprime] = x ;
+		}		
+		plusy = plusy - largeur ;
+
+		x = x - pap ;
+		}
+	
+	}
+// preparer le tableau etudie de l'ordinateur
+
+de = joueur[jr]+ pap;
+jusque = bhaut ;
+pas = pap ;
+existe = 0 ;
+
+plusx = p1 ;
+plusy = y1 ;
+
+	for (x = joueur[jr] + pap ; x <=  bhaut ; )
+	{
+		if ( piece[x] == 1 )
+		{
+
+		//   dessiner fleche haut  
+		existe = x ;
+	
+		 break;
+		}
+	 x = x + pap ;
+
+	}
+
+	if (  micro == 1 && jr == 2 ) calcule();
+	
+	if ( existe > 0 )
+	{
+		for (x = joueur[jr] + pap ; x <=  bhaut ; )
+		{
+		
+
+
+		if (joueur[3 - jr] != x  )
+		{
+		supprime = supprime + 1;
+		 efface[supprime] = x ;
+		}		
+        plusy = plusy + largeur ;
+
+		x = x + pap ;
+		}
+	
+	}
+// preparer le tableau etudie de l'ordinateur
+
+
+
+	 
+	onoff = 1 ; 
+	
+	}
+	
+	//  FIN DE LA FONCTION
+	
+
+	
+
+// choix de la case par l'ordinateur
+
+	if (micro == 1 && jr == 2 && curseur == 1 )
+	{
+	
+	ordinateur(); 
+	
+	
+	xx =  ((lacaze - 1) % pap) * (longueur) ;
+	yy = Math.floor(((lacaze - 1) / pap) );
+	
+if ( lacaze < pap + 1 ) yy = 0 ; else yy =  yy *  largeur ;
+
+	xx =  Math.floor( ( xx + (longueur / 2)) );
+	yy =  Math.floor( (yy + (largeur / 2)) );
+	
+	
+	 curseur = 2 ;
+	}
+	
+	
+	
+	if ( curseur == 2) 
+	{
+	
+	i = 0 ;
+    if ( xx > debutx && xx < debutx + (longueur * colonne ) && yy >= debuty && yy < debuty + (largeur * li)  ) i = 1 ;
+	
+	j =   Math.floor( ( xx / longueur )  ) + 1 ;
+	k  =  Math.floor( ( yy / largeur )  )  ;
+	
+	lacaza  =  k  * colonne + j ;
+	  
+ 
+   if ( i == 1 && (lacaza == joueur[jr] || lacaza == joueur[ 3 - jr] ) ) i = 0 ; 
+  
+
+ 
+     if ( i == 1)  // le deplacement est valable
+	 {
+	 
+	 
+	 
+	 essais = essais - 1 ;
+	 // Effacer les cases susceptibles de contenir des trésors 
+
+
+
+		
+        for ( i = 0 ; i <= supprime ; i++ )
+		{
+
+
+        posX =  ((efface[i] - 1) % pap) * (longueur ) ;
+        j = Math.floor(((efface[i] - 1) / pap) );
+		
+
+		  if ( efface[i] < pap + 1 ) {posY =  0 ; } else posY =  (j * largeur) ;
+		
+		context.clearRect(posX + 1 , posY + 1  , longueur - 2, largeur - 2);
+		
+		}
+		
+		
+		j =   Math.floor( ( xx / longueur )  ) + 1 ;
+		k  =  Math.floor( ( yy / largeur )  )  ;
+		lacaze  =  k  * colonne + j ;
+	  
+
+	
+		posX = (j - 1 ) * longueur ;
+		posY = k * largeur ;
+	
+
+
+
+	if (jr == 1)
+		{
+		context.clearRect(place[1] + 1 , place[2] + 1 , longueur - 2, largeur - 2);
+		
+		}
+		if (jr == 2)
+		{
+		context.clearRect(place[3] + 1 ,place[4] + 1, longueur - 2, largeur - 2);
+		} 
+		         
+
+				 
+//  Placement du joueur
+   
+
+
+	if (jr == 1)
+	{
+		place[1] = posX  ; 
+		place[2] = posY  ;
+	}
+	if (jr == 2)
+	{
+		place[3] =  posX  ;
+		place[4] =  posY  ;
+	 
+	} 
+	  
+		
+
+
+	if ( piece[lacaze] == 1 )
+	{
+	
+	 dernierjoueur = jr ; 
+     positionx =  posX  ;
+	 positiony =  posY  ;  // du dernier joueur
+	
+	gain[jr] = gain[jr] + 1;
+	reste = reste - 1 ;
+	
+	piece[lacaze] = 0 ;
+	
+	
+	context.clearRect( colonne * longueur + 10 , ((li / 2) * largeur ) + (largeur / 2) - 18 , 18 , 24 ) ;
+	
+    context.font = "bold 12pt Arial";
+
+	if ( jr == 1)
+	{
+	context.clearRect( (colonne * longueur ) + 8 , 2 , 12 , largeur / 2 ) ;
+
+    context.fillStyle =    'green' ;
+    context.fillText(gain[1] , (colonne    * longueur) + 8  ,  largeur / 2   ) ;
+ 
+ 
+ }
+	else
+	{
+	context.clearRect( (colonne * longueur ) + 8 , (li  * largeur ) - (largeur / 2)  , 12 , (largeur / 2 ) - 2 ) ;
+
+
+    context.fillStyle = 'blue'; 
+    context.fillText(gain[2] , (colonne    * longueur) + 8   , (li  * largeur ) ) ;
+	
+    context.clearRect( (colonne * longueur ) + 8 , 2 , 12 , largeur / 2 ) ;
+
+    context.fillStyle =    'green' ; 
+    context.fillText(gain[1] , (colonne    * longueur) + 8  ,  largeur / 2   ) ;
+ 
+    }
+ 
+     context.font = "bold 18pt Calibri,Geneva,Arial";
+     context.fillStyle = 'orange' ;  
+	 
+
+context.fillText( reste , colonne * longueur + 10 , ((li / 2) * largeur ) +   Math.floor  ( 3 * (  largeur / 2 ) ) );
+
+
+	context.fill();
+	
+   if ( nombrejoueur == 1 )
+   {
+   	context.clearRect( (colonne * longueur ) + 8 , (li  * largeur ) - (3 * (largeur / 4))  , 20 , (largeur / 2 ) + 2 ) ;
+    
+	
+	context.fillStyle = "yellow"; 
+	context.font = "bold 12pt Arial";
+	context.fillText(essais , ((colonne   ) * longueur) + 8   , ((li  - 1 ) * largeur ) +  (3 * (largeur / 4) ) , longueur /2 , largeur / 2 ) ;
+
+	}
+	
+	}
+	
+	joueur[jr]= lacaze ;
+	etudie[lacaze] = -10000 ;
+	
+	
+	if ( nombrejoueur == 2 ) jr = 3 - jr ;
+		
+	tour = tour + 1 ;
+	
+	onoff = 0 ; 
+	
+	curseur = 1 ;
+	
+}
+	// if i == 1  deplacement valable
+	
+}
+	
+
+	if (jr == 1)
+	{
+	 posX  = place[1]  ; 
+	 posY  = place[2]  ;
+	 
+	 posX2 = place[3]  ;
+	 posY2 = place[4]  ;
+	}
+	if (jr == 2)
+	{
+	 posX = place[3]  ;
+	 posY = place[4]   ;
+	 
+	posX2  = place[1]  ; 
+	posY2  = place[2]  ;
+ 
+	} 
+	
+	//  FAIRE L'ANIMATION DU NOUVEAU JOUEUR QUI A LA MAIN
+	  
+//  Fin de partie
+
+if (essais <= 0 && nombrejoueur == 1 ) reste = 0 ;
+if ( reste == 0)
+{ 
+
+if ( exterieur == 0 )
+{
+
+
+//ici a amodifier 
+	
+	gagne[1] = gain[1] ;
+	gagne[2] = gain[2] ;
+	
+	lieu[1] = place[1];
+	lieu[2] = place[2];
+	
+	lieu[3] = place[3];
+	lieu[4] = place[4];
+	
+	// FIN ici amodifier
+
+
+
+											  
+    context.font = "bold 48pt Arial";	  
+	context.fillStyle =  'green'    ;
+	
+
+ 		  context.fillText( gagne[1] , lieu[1]  + 1  + longueur / 4 , lieu[2]  + 1 + largeur  ) ;		  
+			if ( nombrejoueur == 2 )
+			{
+			  context.fillStyle =   'blue' ; //  'red' ;
+			  context.fillText( gagne[2] , lieu[3] + 1  + longueur / 4 , lieu[4]  + 1 + largeur  ) ;
+			}
+			
+	
+			  context.fill();
+			  
+			  sleep(3000) ;
+			  
+	 
+			  
+// alert ( gagne[jr] + "..." + gagne[3 - jr] );
+			  
+
+             
+
+	if ( nombrejoueur == 1 ) alert (" BONUS = " + essais  ) ;
+	
+	if ( nombrejoueur == 2 )
+	{
+
+
+
+	    if ( micro == 1 && gagne[2] > gagne[1] )  alert (" PERDANT " + gagne[1] + " contre " +  gain[2] ) ;
+		if ( micro == 1 && gagne[1] > gagne[2] )  alert (" VAINQUEUR " + gagne[1] + " contre " +  gagne[2] ) ;
+	  
+		if ( micro == 0 && gagne[2] > gagne[1] )  alert (" 2eme Joueur est VAINQUEUR  " + gagne[1] + " contre " +  gagne[2] ) ;
+		if ( micro == 0 && gagne[1] > gagne[2] )  alert (" 1er Joueur est VAINQUEUR  " + gagne[1] + " contre " +  gagne[2] ) ;
+	
+	}
+	
+	
+	
+	
+}
+	for ( i = 1 ; i < 150 ; i = i + 1 )
+	{
+	piece[i] = 0 ;
+	etudie[i] = 1 ;
+	}
+
+	
+	if (pap == 5 || pap == 6)
+	{
+	etudie[3] = 10 ;
+	etudie[11] = 10 ;
+	etudie[13] = 10 ;
+	etudie[15] = 10 ;
+	etudie[23] = 10 ;
+	}
+	if (pap == 7)
+	{
+	etudie[4]  = 10 ;
+	etudie[22] = 10 ;
+	etudie[25] = 10 ;
+	etudie[28] = 10 ;
+	etudie[46] = 10 ;
+	}
+
+	gain[1] = 0 ; 
+	gain[2] = 0 ;
+
+	curseur = 0;
+	tour = 0 ;
+	
+  
+	 
+	 jr = 1 ;
+	 
+	decallage = 0;
+	 
+	 essais = Math.floor( ((li * colonne) / 2) ) + 1  ;
+	 
+
+	 
+}   
+	//  Faire Clignoter le joueur qui a la main
+	
+
+context.font = "bold 12pt ,Arial";	
+context.fillStyle = 'orange' ;
+context.fillText(photo[0] , colonne * longueur + 25  , (li / 2) * largeur  , 3 * (longueur / 4 ) ,  3 * (largeur / 4 ) ) ;
+		  
+context.font = "bold 18pt Calibri,Geneva,Arial";
+
+
+   
+
+
+
+
+context.fillText( "reste" , colonne * longueur + 1  , ( ( (li / 2) - 1) * largeur ) + largeur / 2);
+context.fillText( reste , colonne * longueur + 10 , ((li / 2) * largeur ) + largeur / 2 );
+
+context.font = "bold 12pt Arial";
+context.fillStyle =  'green' ; 
+
+ context.fillText(gain[1] , ((colonne   ) * longueur) + 8  ,  largeur / 2  , longueur / 2 , largeur / 2 ) ;
+
+ if ( nombrejoueur == 2 )
+{
+ context.fillStyle = 'blue' ;  
+ context.fillText(gain[2] , ((colonne   ) * longueur) + 8   , (li  * largeur ) , longueur /2 , largeur / 2 ) ;
+}
+else
+{
+
+ context.fillStyle = 'yellow' ; 
+ 
+ context.font = "bold 12pt Arial";
+ context.fillText("ESSAIS" , ((colonne   ) * longueur) + 6  , (li  - 1 ) * largeur   ) ;
+ context.font = "bold 12pt Arial";
+ context.fillText(essais , ((colonne   ) * longueur) + 8   , ((li  - 1 ) * largeur ) +  (3 * (largeur / 4) )  ) ;
+
+
+
+}
+   
+	
+       context.fill();
+	
+
+
+   
+		
+context.font = "bold 40pt Arial";	  
+	context.fillStyle =  'green'    ;  
+	if ( jr == 2 ) context.fillStyle =  'blue' ; 
+			  context.fillText( gain[jr] , (posX  ) + 1  + longueur / 4 , ( posY  )  + 1 + largeur  ) ;
+	  
+			  context.fill();
+		
+context.fillStyle =   'green' ; 
+
+if ( nombrejoueur == 2 && 3 - jr == 2 ) context.fillStyle =  'blue' ;
+
+   if ( nombrejoueur == 2 )  context.fillText(gain[3 -jr] , (posX2  )+ 1  + longueur / 4 , (posY2) + 1 + largeur  ) ;
+                                             
+		  	  context.fill();
+ 
+ 
+ 
+
+context.font = "bold 36pt Arial";
+ 
+        for ( i = 0 ; i <= supprime ; i++ )
+		{
+		
+        posX =  ((efface[i] - 1) % pap) * (longueur ) ;
+        j = Math.floor(((efface[i] - 1) / pap) );
+		
+	
+		  if ( efface[i] < pap + 1 ) {posY =  0 ; } else posY =  (j * largeur) ;
+		   
+		context.fillStyle = 'orange' ;
+		context.fillText(photo[0] , posX + 2  +  longueur / 4  , posY + 2 +  (largeur ) );  //   / 2
+
+
+		
+		}
+		
+		context.font = "bold 20pt Arial";
+		
+		if ( nombrejoueur == 2 ) 
+		{
+		context.fillStyle =  'green' ;    
+   	    if ( jr == 1)  context.fillText( gain[1] , ((colonne  + 1 ) * longueur) - 15  ,  largeur / 2 ) ;
+   
+	    context.fillStyle =  'blue' ; 
+	    if ( jr == 2 ) context.fillText(gain[2] , ((colonne  + 1 ) * longueur) - 15   ,  li  * largeur    ) ;  //  +  (largeur / 2)
+        }
+	
+
+		                                       
+    }
+    
+}
+
+
+</script>
+
+
+
+<script>
+function initialise()
+{	
+//    DEBUT  INITIALISE 
+
+tour = 0 ;
+curseur = 0 ;
+
+	for ( i = 1 ; i < 150 ; i = i + 1 )
+	{
+	piece[i] = 0 ;
+	etudie[i] = 1 ;
+	}
+
+	if (pap == 5 || pap == 6)
+	{
+	etudie[3] = 10 ;
+	etudie[11] = 10 ;
+	etudie[13] = 10 ;
+	etudie[15] = 10 ;
+	etudie[23] = 10 ;
+	}
+	if (pap == 7)
+	{
+	etudie[4]  = 10 ;
+	etudie[22] = 10 ;
+	etudie[25] = 10 ;
+	etudie[28] = 10 ;
+	etudie[46] = 10 ;
+	}
+	gain[1] = 0 ; 
+	gain[2] = 0 ;
+    
+	essais = Math.floor( ((li * colonne) / 2) ) + 2  ;
+	 
+
+	 
+     reste = 0 ;
+    for (  ; reste < 9 ;  )
+    {
+
+
+	 d = new Date() ;
+ 	 i  = d.getMilliseconds() + i + reste + 1000;
+	 ar =  (li * colonne) - 1  ;
+	 ar =  Math.floor( i % ar  ) + 1  ;
+
+
+
+	if (piece[ar] ==  0 && ar != 1 && ar != li * colonne )
+	{
+	piece[ar] = 1 ;
+	reste = reste + 1;
+	}
+ 
+
+
+
+ 
+   }
+
+   exterieur = 0 ;
+   
+ 
+   
+   
+   		place[1] = 0;
+		place[2] = 0 ;
+		
+	    place[3] =  (colonne - 1) * longueur ;
+		place[4] = ( li - 1 ) * largeur  ;
+
+//   A V E R I F I E R
+
+   decallage = decallage + 1 ;      
+
+		// Dessin du joueur 2
+		
+		posX =   (colonne  - 1) *  longueur   ;
+ 		posY =   ( li - 1) *  largeur     ; 
+
+		
+       joueur[1] = 1;		
+       joueur[2] = li * colonne ;
+	   
+	   ar = joueur[1] ;
+	   etudie[ar] = -10000 ;
+	   ar = joueur[2] ;
+	   etudie[ar] = -10000 ;
+  
+  
+etudie[1] = -10000 ;
+etudie[pap * pap ] = -10000 ;
+
+     
+	  
+
+
+ }
+ 
+ //   Ajouter l'emplacement des 2 joueurs
+ //   Ajouter aussi l'emplacement des pieces de trésor par rapoort au premier joueur
+ 
+ 
+ //  FIN INITIALISE                
+</script>
+
+
+<script>
+function ordinateur()
+{
+// coup de l'ordinateur
+
+     
+	 for ( i = 1 ; i <= li ; i = i + 1 )
+	 {
+	    h = 0 ;
+		for ( j = 1 ; j <= colonne ; j = j + 1 )
+		{
+		 k = (( i - 1 ) * colonne) + j ;
+			if ( etudie[k] > 0 ) 
+			{
+		     h = h + 1 ;
+			 g = k ;
+			}
+		
+		}
+		
+		if ( h == 1) etudie[g] = 2000 ;
+	 
+	 }
+	
+// Etude sur chaque colonne	
+	 for ( i = 1 ; i <= colonne ; i = i + 1 )
+	 {
+	    h = 0 ;
+		for ( j = i ; j <= li * pas ; j = j + pas )
+		{
+	
+	
+	     k = j ;
+		 
+
+		 
+			if ( etudie[k] > 0 ) 
+			{
+		     h = h + 1 ;
+			 g = k ;
+			}
+		
+		}
+		
+		if ( h == 1) etudie[g] = 2000 ;
+	 
+	 }	
+	
+	
+	 h = 1;
+	for (g = 1 ; g <= pap * pap ; g = g + 1 )
+	{
+		if (etudie[g] > etudie[h] && etudie[g] > 0 )  // h != joueur[1]
+		{
+		h = g;
+		ar = h ;
+		lacaze = h ;
+		}
+	}
+
+
+}
+
+</script>
+
+
+<script>
+function calcule()
+{
+
+
+
+if (existe > 0)
+	{
+        h = 0 ;
+		for ( g = de ; g <= jusque ; g = g + pas )
+		{
+			if ( etudie[g] > 0 && g != joueur[3 - jr] )
+			{
+			h = h + 1 ;
+			etudie[g] = etudie[g] + 1;
+			j = g ;
+			}
+		}
+		
+		if ( h == 1 ) etudie[j] = 20000 ;
+// coup sur ou il y a du trésor
+
+
+if (  (joueur[jr] - de) == pas ||  (de - joueur[jr] ) == pas) etudie[de] = 20000 ;
+if (  (jusque - joueur[jr] ) == pas || ( joueur[jr] - jusque ) == pas) etudie[jusque] = 20000 ;
+
+	}
+
+
+// cas des cases sûr qui ne contiennent pas de trésor
+
+	if ( existe == 0)
+	{
+		for ( g = de ; g <= jusque ; g = g + pas )
+		{
+		etudie[g] = -100000;
+		}
+
+	}
+
+// interdire le choix des emplacements des 2 joueurs 	
+	etudie[joueur[3 - jr]] = -100000; 
+	etudie[joueur[jr]] = -100000; 
+
+}
+
+</script>
+
+
+
+<script>
+   var list = document.getElementById('list');
+  
+  list.addEventListener('change', function() {
+
+	 
+	 nombrejoueur = list.selectedIndex ; 
+	
+	 reste = 0 ;
+	 essais = 0 ;
+	 tour = 0 ;
+	 curseur = 0 ;  // 1
+	 exterieur = 1 ;
+	 
+	 onoff = 0 ;
+	 
+	 micro = 0 ;
+	 if (nombrejoueur == 3 ) 
+	 {
+	 nombrejoueur = 2 ;
+	 micro = 1 ;
+	 }
+	 
+
+
+  }, true);
+</script>
+
+
+<script>
+ 
+ 
+  var list2 = document.getElementById('list2');
+  list2.addEventListener('change', function() 
+  { 
+	 pap = list2.selectedIndex ;
+	 pap = pap + 4 ;
+	 li = pap ;
+	 colonne = pap ;
+	 
+
+     reste = 0 ;
+	 essais = 0 ;
+	 tour = 0 ;
+	curseur = 0 ; // 1
+	exterieur = 1 ;
+	 
+	 	
+	    onoff = 0 ;      
+	
+	// Ajout Probleme QUAND IL YA MODIFICATION DE LA TAILLE DE LA GRILLE
+	
+
+  }, true);
+</script>
+
+
+
+
+</SCRIPT>
+
+<SCRIPT> //  language=javascript>
+   function Rejouer() 
+   {
+
+   
+     reste = 0 ;
+	 essais = 0 ;
+	 tour = 0 ;
+	 curseur = 0 ; 
+	 exterieur = 1 ;
+	 
+	 	
+	    onoff = 0 ;       
+ 
+
+   
+       
+   }
+</SCRIPT>
+
+
+
+				 
+<script>
+  function findPosX(obj)
+  {
+    var curleft = 0;
+    if(obj.offsetParent)
+        while(1) 
+        {
+          curleft += obj.offsetLeft;
+          if(!obj.offsetParent)
+            break;
+          obj = obj.offsetParent;
+        }
+    else if(obj.x)
+        curleft += obj.x;
+	//	alert(curleft);
+    return curleft;
+  }
+</script>
+
+
+<script>
+  function findPosY(obj)
+  {
+    var curtop = 0;
+    if(obj.offsetParent)
+        while(1)
+        {
+          curtop += obj.offsetTop;
+          if(!obj.offsetParent)
+            break;
+          obj = obj.offsetParent;
+        }
+    else if(obj.y)
+        curtop += obj.y;
+    return curtop;
+  }
+
+</script>
+
+ <div id="position"></div>
+ <script>
+
+    var position = document.getElementById('position');
+  
+  
+   
+	  document.addEventListener('click', function(e) {
+       
+    
+	i = 0 ;
+	
+    if ( micro == 1 && jr == 2) i = 1 ;
+	
+	if ( i != 1 )
+	{
+
+	 xx = e.clientX  - offsetx;
+	 yy = e.clientY - offsety;
+
+	 }
+	 
+	 curseur = 2 ;
+
+	   
+    }, false);
+</script>
+                       
+</body>
+</html>
