@@ -1,0 +1,635 @@
+
+<html>
+
+<head>
+<meta name="viewport" content="user-scalable=no, width=device-width" /> 
+<meta name="apple-mobile-web-app-capable" content="yes" /> 
+
+</head>
+
+CHELLY Najib: REGLE DU JEU: On montre le tiers du mot en haut ou du milieu ou en bas a vous de trouver le mot. Avec l'option RIDEAU le programme dévoile ligne aprés ligne.
+
+<body>
+
+
+<canvas id="myCanvas" width="800" height="400"></canvas>
+
+<style>
+    #myCanvas {
+        width: 800px;  /* Taille visuelle */
+        height: 300px; /* Taille visuelle */
+    }
+</style>
+
+
+<body onunload="window.opener.location.reload();">
+
+
+<FORM name="mon_formulaire">
+<INPUT type=button value="Réponse ?" onClick="PromptMessage()">
+</FORM>
+<FORM>
+<INPUT type=button value="LA SOLUTION:" onClick="Message()">
+</FORM>
+<select id="list">
+  <option>OPTIONS</option>
+  <option>RIDEAU</option>
+  <option>TIERS SUPERIEUR</option>
+  <option>TIERS MILIEU</option>
+  <option>TIERS INFERIEUR</option>
+</select>
+
+
+
+
+<A HREF="javascript":/A>
+ 
+
+<script type="text/javascript">
+
+var curseur = 0 , niveauaffichage  ;   // 0
+
+var xx ;
+var yy ;
+var text ;  
+
+var img = new Image();
+
+    var scwidth ;    //  = 454 ;
+	var scheight ;    // = 780 ;
+	
+	
+	var longueur  , largeur = 40 ;  // 40
+	var i = 1 ;
+	var j = 1 ;
+	var k = 1 ;
+	var debutcolonne ;
+    var exterieur = 1 ;
+	var genere ;
+	
+	var Score  ;
+	var m , IndiceMot ;
+    var limite = 0 ;
+	var option = 2 ; // 1
+	var saisie , bete  ;
+	var mot = new Array(20);
+
+
+   
+
+	
+	list.selectedIndex = option ;
+	
+window.onload = function()
+{
+
+
+//  <INPUT TYPE="button" Value=" Menu & Options " onclick="window.location='indexMot.html';">
+
+/*
+      // Création de l'élément canvas
+      canvas = document.createElement('CANVAS');
+      canvas.setAttribute('width', 132);
+      canvas.setAttribute('height', 150);
+                                                        */
+														
+    var canvas = document.getElementById("myCanvas");
+    if(!canvas)
+    {
+        alert("Impossible de récupérer le canvas")
+    }
+    
+    var context = canvas.getContext("2d");
+    if(!context)
+    {
+        alert("Impossible de récupérer le context");
+    }
+	
+	        canvas.width = window.innerWidth  ;
+            canvas.height = window.innerHeight - 60;
+
+  
+ var dictionaire = new Array ;  // var dictionaire = new Array(20)
+ 
+ dictionaire[0] = "PETROLE" ;
+ dictionaire[1] = "PROFESSEURS" ;
+ dictionaire[2] = "TACHE" ;
+ dictionaire[3] = "MONTAGE" ;
+ dictionaire[4] = "MARCHER" ;
+ dictionaire[5] = "JOUER" ;
+ dictionaire[6] = "CHEVAUX" ;
+ dictionaire[7] = "POURSUITE" ;
+ dictionaire[8] = "SOUCHE" ;
+ dictionaire[9] = "COUSCOUS" ;
+ dictionaire[10] = "FETICHE" ;
+ dictionaire[11] = "SOLIDAIRE" ;
+ dictionaire[12] = "GENEREUX" ;
+ dictionaire[13] = "CAPTIVANT" ;
+ dictionaire[14] = "CHALEUR" ;
+ dictionaire[15] = "FROID" ;
+ dictionaire[16] = "METISSAGE" ;
+ dictionaire[17] = "BALLON" ;
+ dictionaire[18] = "SAVOIR" ;
+ dictionaire[19] = "PROFESSEUR" ;
+
+                                           
+ 
+	 
+ var lettres = new Array(27) ;
+ lettres[0] = new Image(); 
+ lettres[1] = new Image(); 
+ lettres[2] = new Image(); 
+ lettres[3] = new Image(); 
+ lettres[4] = new Image(); 
+ 
+  lettres[5] = new Image(); 
+  lettres[6] = new Image(); 
+  lettres[7] = new Image(); 
+  lettres[8] = new Image(); 
+  
+  lettres[9] = new Image(); 
+  lettres[10] = new Image(); 
+  lettres[11] = new Image(); 
+  lettres[12] = new Image(); 
+
+  lettres[13] = new Image(); 
+  lettres[14] = new Image(); 
+  lettres[15] = new Image(); 
+  lettres[16] = new Image(); 
+
+  lettres[17] = new Image(); 
+  lettres[18] = new Image(); 
+  lettres[19] = new Image(); 
+  lettres[20] = new Image(); 
+
+  lettres[21] = new Image(); 
+  lettres[22] = new Image(); 
+  lettres[23] = new Image(); 
+  lettres[24] = new Image(); 
+
+  lettres[25] = new Image(); 
+  lettres[26] = new Image(); 
+
+//  if (theme == 1)
+ //{
+ lettres[0].src = "A.gif";
+ lettres[1].src = "A.gif";
+ lettres[2].src = "B.gif";
+ lettres[3].src = "C.gif";
+ lettres[4].src = "D.gif";
+ 
+  lettres[5].src = "E.gif";
+  lettres[6].src = "F.gif";
+  lettres[7].src = "G.gif";
+  lettres[8].src = "H.gif";
+  
+  lettres[9].src = "I.gif";
+  lettres[10].src = "J.gif";
+  lettres[11].src = "K.gif";
+  lettres[12].src = "L.gif";
+
+  lettres[13].src = "M.gif";
+  lettres[14].src = "N.gif";
+  lettres[15].src = "O.gif";
+  lettres[16].src = "P.gif";
+
+  lettres[17].src = "Q.gif";
+  lettres[18].src = "R.gif";
+  lettres[19].src = "S.gif";
+  lettres[20].src = "T.gif";
+
+  lettres[21].src = "U.gif";
+  lettres[22].src = "V.gif";
+  lettres[23].src = "W.gif";
+  lettres[24].src = "X.gif";
+
+  lettres[25].src = "Y.gif";
+  lettres[26].src = "Z.gif";
+
+	 
+ 
+ var reponse = new Array ;
+ var alphabet = new Array(26);
+
+ 
+alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+ var b = new Array();
+ 
+ 
+// Initialisations
+ 
+    var diametreBalle = 20;
+
+						  
+	var posY = 2 ; // 10  
+	var posX = 150 ;  //
+
+    var vitesseX = 3;
+    var vitesseY = 3;
+    
+    var d ;
+	var nomimage ;
+   //  var saisie ;
+	//  var option ;
+	 var de , jusque ;
+	  
+	var firstTimestamp = new Date().getTime(); // On obtient le timestamp avant l'exécution
+
+// slow(); // La fonction travaille...
+
+var secondTimestamp = new Date().getTime(); // On récupère le timestamp après l'exécution
+var result , cycle = 1 ;
+
+ //    myInterval = setInterval(animate, 1000/30);  // animate, 1000/30    BON PC
+
+    myInterval = setInterval(animate, 1000/ 30);  // animate, 1000/30
+	
+
+  /*
+      niveauaffichage  = 1 ; 
+   
+	
+	 d = new Date();
+	 IndiceMot  = d.getMilliseconds();
+	 IndiceMot =  Math.floor( ( IndiceMot % dictionaire.length)  )   ;
+	//  alert(IndiceMot) ;
+	
+	                       */
+	
+	
+
+    function animate()
+    {
+	
+ //  context.clearRect(0, 0, canvas.width, canvas.height);
+ //   context.fill();
+    //   context.fill();
+
+		if (exterieur == 1)
+		{
+	    niveauaffichage  = 1 ; 
+   
+	
+		d = new Date();
+		IndiceMot  = d.getMilliseconds();
+		IndiceMot =  Math.floor( ( IndiceMot % dictionaire.length)  )   ;
+	//  alert(IndiceMot) ;
+	     exterieur = 0 ;
+	    limite = 0 ;
+	    genere = 0 ;
+		}
+
+
+ // document.write(yourName) ;
+ 
+
+   if (option >  1 && limite == 2 && saisie != null )  
+   {
+
+ //   alert("option = " + option ) ;
+		 
+        if (saisie!=null) 
+		{
+
+	    bete = saisie.toUpperCase() ;   // retourne le mot en Majuscules
+		
+//	alert ( "bete " + bete) ;
+
+		if ( bete == mot ) alert ( "B R A V O") ;
+		    else alert ( "Le Mot est: " + mot ) ;
+			
+		limite = 0 ;
+	 
+		saisie = null ;
+		
+		exterieur = 1 ;
+   
+		}
+	     
+		 
+ }
+
+
+
+//    IndiceObjet.innerHTML = 'IndiceObjet = ' + IndiceObjet ;
+
+//  document.write( tour ) ;
+ 
+
+
+			
+			
+    secondTimestamp = new Date().getTime() ;
+   if (option == 1 )  result = secondTimestamp - firstTimestamp; // On fait la soustraction
+     else firstTimestamp = secondTimestamp ;
+                                                                               
+  // alert("Le temps d'exécution est de : " + result + " millisecondes.");
+   
+  //  alert(secondTimestamp - firstTimestamp) ;
+  
+  /*    TRES BIEN 
+  function draw() {
+
+  // Cycle parmi toutes les images
+  for (i = 0; i < document.images.length; i++) {
+
+    // Ne pas ajouter de canevas pour l'image du cadre
+    if (document.images[i].getAttribute('id') != 'frame') {
+
+      // Création de l'élément canvas
+      canvas = document.createElement('CANVAS');
+      canvas.setAttribute('width', 132);
+      canvas.setAttribute('height', 150);
+
+      // Insertion avant l'image
+      document.images[i].parentNode.insertBefore(canvas, document.images[i]);
+
+      ctx = canvas.getContext('2d');
+
+      // Dessin de l'image sur le canevas
+      ctx.drawImage(document.images[i], 15, 20);
+
+      // Ajout du cadre
+      ctx.drawImage(document.getElementById('frame'), 0, 0);
+    }
+  }
+}
+       */
+	   
+/*	   BON lecture du pixel
+
+	       // Récupère les infos de pixel du canvas foreground
+      imgdatafg=contextfg.getImageData(0,0,width,height);
+      pixelsfg=imgdatafg.data;
+	  
+	  
+	  
+var img = new Image();
+    var ctx = canvas.getContext("2d");
+    var canvasCopy = document.createElement("canvas");
+    var copyContext = canvasCopy.getContext("2d");
+
+    img.onload = function()
+    {
+        var ratio = 1;
+
+        if(img.width > maxWidth)
+            ratio = maxWidth / img.width;
+        else if(img.height > maxHeight)
+                                                  */
+
+// mot = dictionaire[IndiceMot] ;
+// mot = "PROFESSEURES" ;
+
+
+
+ 
+if (option >  1 )   // Tiers superieur ou milieu ou tiers inférieur
+{
+                       
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  
+ //  context.fill();
+                                    
+                                                     
+    mot = dictionaire[IndiceMot] ; 
+	longueur = Math.floor( ( canvas.width - (10 * mot.length ) )  / mot.length  )  ;
+	debutcolonne = canvas.width -  (  ( ( mot.length  + 1 ) * 10  ) +  ( mot.length  * longueur ) )  ;
+	debutcolonne = Math.floor(( debutcolonne / 2)) ;
+	if ( debutcolonne < 0 ) debutcolonne = 0 ;
+
+   if (option == 2 )
+	{
+	de =  0 ;
+	jusque = Math.floor( ( lettres[1].height  / 3 ) ) ;
+	}
+
+	if (option == 3 )
+	{
+	de = Math.floor( ( lettres[1].height  / 3 ) ) ;
+	jusque = (2 * de)  - 1 ;
+	}
+
+	if (option == 4 )
+	{
+	 de =  2 * Math.floor( ( lettres[1].height / 3 ) ) ;
+	 // jusque = de + Math.floor( ( lettres[1].height / 3 ) ) ;
+	 
+	 // jusque = lettres[1].height - 1  ;
+	
+	}
+
+	
+	text = "" ;
+    m =  debutcolonne + 10 ;	
+	
+    for ( k = 0 ; k < mot.length ; k++ )
+	{
+     
+	 nomimage =  "" ;
+	 
+	 for (j = 0 ; j < 26 ; j++ )
+	   {
+		if ( alphabet[j] == mot[k] ) break ;
+	   }
+	   
+ //     prompt("lettre = " ,  alphabet[j] );
+	 
+   nomimage =  alphabet[j] + ".gif" ;
+   
+//    alert (nomimage) ;
+   
+	text = text + nomimage + ' ';
+	
+ 	if (option == 4 ) jusque = lettres[j + 1].height ; 
+  context.drawImage(lettres[j+1], 0, de, lettres[j+1].width, jusque - de - 1 , m , de , longueur, jusque - de - 1) ;
+
+	m =  m + longueur + 10 ;
+	}  
+	
+
+   limite = 1 ;
+}
+												  
+
+												  
+ if ( option == 1 && result > 300 && limite == 0 ) // 500
+  {
+  
+ 
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fill();
+                                          
+										  
+  firstTimestamp = secondTimestamp ;
+
+
+
+//  alert ( longueur + "  " + debutcolonne ) ;
+                                                  
+	niveauaffichage  = niveauaffichage  + 1 ;
+  
+	mot = dictionaire[IndiceMot] ;
+	longueur = Math.floor( ( 450 - (10 * mot.length ) )  / mot.length  )  ;
+	debutcolonne = 450 -  (  ( ( mot.length  + 1 ) * 10  ) +  ( mot.length  * longueur ) )  ;
+	debutcolonne = Math.floor(( debutcolonne / 2)) ; 
+	if ( debutcolonne  < 0 ) debutcolonne = 0 ;
+											  
+    text = "" ;
+   m =  debutcolonne + 10 ;
+	
+	for ( k = 0 ; k < mot.length ; k++ )
+	{
+     
+	 nomimage =  "" ;
+	 
+	 for (j = 0 ; j < 26 ; j++ )
+	   {
+		if ( alphabet[j] == mot[k] ) break ;
+	   }
+	   
+ //     prompt("lettre = " ,  alphabet[j] );
+	 
+   nomimage =  alphabet[j] + ".gif" ;
+   
+//    alert (nomimage) ;
+   
+	text = text + nomimage + ' ';
+	
+	
+  context.drawImage(lettres[j+1], 0, 0, lettres[j+1].width, niveauaffichage , m , 0 , longueur, niveauaffichage)	
+
+
+ m =  m + longueur + 10 ; 
+
+	
+	}  
+
+ // if ( m + 25 >= 440)  alert(m);
+ 
+ // Affichage du score
+context.font = "bold 12pt Arial";
+context.fillStyle = "#f00";  //       "#f00"  = ROUGE        et   "#fff"    Blanc
+
+ context.fillText( 99 - niveauaffichage ,  m - 5  ,  niveauaffichage + 12 , 28, 20 ) ;
+if ( lettres[j+1].height - niveauaffichage < 20 )   limite = 1 ; 
+
+ }  // if ( result > 15000)  	
+
+  
+      context.fill();
+	  
+        if (saisie!=null) 
+		{
+
+	    bete = saisie.toUpperCase() ;   // retourne le mot en Majuscules
+		
+//	alert ( "bete " + bete) ;
+
+		if ( bete == mot ) alert ( "B R A V O") ; 
+		    else alert ( "Le Mot est: " + mot ) ; 
+			
+		limite = 0 ;
+	 
+		saisie = null ;
+		
+		exterieur = 1 ;
+   
+		}
+                                    
+    }
+    
+}
+
+</script>
+
+
+
+<script>
+
+   var list = document.getElementById('list');
+  
+  list.addEventListener('change', function() {
+
+   // On affiche le contenu de l'élément <option> ciblé par la propriété selectedIndex
+   //   alert(list.options[list.selectedIndex].innerHTML);
+	 
+	 
+	if (list.selectedIndex != 0 ) option = list.selectedIndex ;
+	else list.selectedIndex = option ;
+	
+	// option = list.selectedIndex ; 
+	 
+	 
+	 limite = 0 ;
+	 exterieur = 1 ;
+	 
+	 // alert(list.selectedIndex); 
+	 
+//	 alert("option choix = " + option ) ;
+	 
+   // function() ;	 
+	 
+	  
+	 
+	//  alert(list.selectedIndex);
+	 
+
+  }, true);
+</script>
+
+
+<SCRIPT language=javascript>
+   function PromptMessage() {
+       saisie = prompt("Saisissez votre texte :", "")
+       if (saisie!=null) {
+           document.forms["mon_formulaire"].elements["mon_champ_texte"].value=saisie;
+	//	   alert(saisie);
+       }
+   }
+</SCRIPT>              
+
+
+<SCRIPT language=javascript>
+   function Message() {
+       exterieur = 1 ;
+	   limite = 0 ;
+       alert( mot ) ;  // mot
+   }
+</SCRIPT>
+
+
+
+<div id="position"></div>
+ <script>
+
+    var position = document.getElementById('position');
+  
+   // document.addEventListener('mousemove', function(e) {
+   
+	  document.addEventListener('click', function(e) {
+     //   position.innerHTML = 'Position X : ' + e.clientX + 'px<br />Position Y : ' + e.clientY + 'px';
+     xx = e.clientX ;
+	 yy = e.clientY ;
+	 
+	 
+	// curseur = 2 ;
+	 
+	 limite = 2 ;
+   
+//    position.innerHTML = 'Position X : ' + xx + 'px<br />Position Y : ' + yy + 'px' ;
+	
+	
+	
+    }, false);
+
+</script>
+
+
+
+
+</body>
+</html>
